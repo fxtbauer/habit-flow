@@ -3,15 +3,15 @@ package br.gov.sp.fatec.pg.oo.model;
 public class User {
 
     private int id;
-    private String name;
+    private String username;
     private String email;
     private String password; 
     private String role;
 
     public User (){}
-    public User (int id, String name, String email, String password, String role){
+    public User (int id, String username, String email, String password, String role){
         this.id = id;
-        this.name = name;
+        this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
@@ -24,10 +24,10 @@ public class User {
         this.id = id;
     }
     public String getName(){
-        return name;
+        return username;
     }
     public void setName(String name){
-        this.name = name;
+        this.username = name;
     }
     public String getEmail(){
         return email;
@@ -48,6 +48,10 @@ public class User {
         this.role = role;
     }
 
-    
+    @Override
+    public String toString() {
+        return "User{username='" + username + "', role=" + role + "}";
+    }
+
 }
 
