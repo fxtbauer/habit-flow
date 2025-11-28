@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SQLConnection {
-
+    
     private static final String URL = "jdbc:sqlite:habitflow.db";
 
     public static Connection getConnection() throws SQLException {
