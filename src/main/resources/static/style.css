@@ -1,0 +1,131 @@
+/* ======== RESET ======== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", Arial, sans-serif;
+}
+
+body {
+    background: #e8ecf3;
+    color: #222;
+    padding: 20px;
+}
+
+/* ======== HEADER ======== */
+h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+/* ======== MENU ======== */
+nav {
+    margin-bottom: 25px;
+}
+
+nav button {
+    background: #4a90e2;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin-right: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+nav button:hover {
+    background: #357bd8;
+    transform: translateY(-2px);
+}
+
+nav button:active {
+    transform: translateY(1px);
+}
+
+/* ======== CONTAINER ======== */
+.container {
+    max-width: 700px;
+    background: white;
+    margin-top: 15px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* ======== TITULOS DAS SEÇÕES ======== */
+h2, h3 {
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* ======== LISTA DE HÁBITOS ======== */
+#habitList {
+    list-style: disc;
+    padding-left: 20px;
+}
+
+#habitList li {
+    margin: 5px 0;
+    padding: 6px 10px;
+    background: #f6f9fc;
+    border-left: 4px solid #4a90e2;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+#habitList li:hover {
+    background: #eef3f8;
+    transform: translateX(3px);
+}
+
+/* ======== FORM PARA ADICIONAR HABITO ======== */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 15px;
+    display: block;
+    margin-bottom: 6px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.2s;
+}
+
+input[type="text"]:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+/* Botão Adicionar */
+button.add-btn,
+button[onclick="addHabit()"] {
+    background: #27ae60;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    color: white;
+    transition: 0.2s;
+}
+
+button.add-btn:hover,
+button[onclick="addHabit()"]:hover {
+    background: #1e924d;
+    transform: translateY(-2px);
+}
+
+button.add-btn:active,
+button[onclick="addHabit()"]:active {
+    transform: translateY(1px);
+}

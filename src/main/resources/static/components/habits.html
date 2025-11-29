@@ -1,0 +1,12 @@
+<h2>Meus Hábitos</h2>
+
+<div x-data="{ habit: '', list: [] }">
+    <input x-model="habit" placeholder="Novo hábito">
+    <button @click="list.push(habit); habit=''">Adicionar</button>
+
+    <ul>
+        <template x-for="h in list">
+            <li x-text="h"></li>
+        </template>
+    </ul>
+</div>
