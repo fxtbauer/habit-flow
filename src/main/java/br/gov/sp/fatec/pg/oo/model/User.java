@@ -24,15 +24,14 @@ public class User {
     public String getUsername(){
         return username;
     }
-    public void setUserngit push origin main
-ame(String name){
+    public void setUsername(String name){
         this.username = name;
     }
 
     public String getPassword(){
         return password;
     }
-    public void setParssword(String password){
+    public void setPassword(String password){
         this.password = password;
     }
     public String getRole(){
