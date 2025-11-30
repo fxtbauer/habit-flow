@@ -24,7 +24,8 @@ public class User {
     public String getUsername(){
         return username;
     }
-    public void setUserame(String name){
+    public void setUserngit push origin main
+ame(String name){
         this.username = name;
     }
 
