@@ -17,7 +17,7 @@ public class HabitRepository{
         try (Connection conn = SQLConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, habit.getId());
+            stmt.setInt(1, habit.getUserId());
             stmt.setString(2, habit.getName());
             stmt.setInt(3, habit.isCompleted() ? 1 : 0);
 
@@ -34,17 +34,20 @@ public class HabitRepository{
              PreparedStatement stmt = conn.prepareStatement(sql)){
 
                 stmt.setInt(1, userId);
-                
+
                 ResultSet rs = stmt.executeQuery();
-                while (rs.next()){
-                    habits.add(new Habit(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getInt("completed") == 1
-                    ));
-                }
+               while (rs.next()) {
+                Habit habit = new Habit(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getInt("completed") == 1
+                );
+
+                habit.setUserId(rs.getInt("user_id")); 
+                habits.add(habit);
+            }
                 return habits;
-            
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -58,23 +61,23 @@ public class HabitRepository{
                 stmt.setString(1, habit.getName());
                 stmt.setInt(2, habit.isCompleted() ? 1 : 0);
                 stmt.setInt(3, habit.getId());
-                
+
                 stmt.executeUpdate();
 
-            
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    
-        
+
+
     }
     public void deleteHabit(int id){
-        String sql = "DELETE FROM habit WHERE id = ?"; 
+        String sql = "DELETE FROM habits WHERE id = ?"; 
         try (Connection conn = SQLConnection.getConnection(); 
              PreparedStatement stmt = conn.prepareStatement(sql)){
                 stmt.setInt(1, id);
                 stmt.executeUpdate();
-            
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
