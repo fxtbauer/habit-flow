@@ -3,7 +3,8 @@ package br.gov.sp.fatec.pg.oo.model;
 public class Habit {
 
     private int id;
-     private boolean completed;
+    private int userId;
+    private boolean completed;
     private String name;
    
 
@@ -23,6 +24,13 @@ public class Habit {
         this.id = id;
     }
 
+    public int getUserId(){
+        return userId;
+    }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     public String getName() {
         return name;
     }
@@ -31,6 +39,7 @@ public class Habit {
         this.name = name;
     }
 
+    
     public boolean isCompleted() {
         return completed;
     }
