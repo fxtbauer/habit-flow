@@ -17,7 +17,7 @@ public class UserController {
      private void registerRoutes(Javalin app) {
 
         app.post("/register", this::registerUser);
-        app.post("/logon", this::loginUser);
+        app.post("/login", this::loginUser);
         app.get("/users", this::getAllUsers);
     }
 
