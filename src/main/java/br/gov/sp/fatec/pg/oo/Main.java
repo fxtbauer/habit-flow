@@ -15,9 +15,8 @@ public class Main {
             res.setCharacterEncoding("UTF-8");
         });
         }).start(7070);
-        app.get("/", ctx ->  { 
-            // Teste
-            ctx.result("Hello World!");
+        app.get("/status", ctx -> {
+            ctx.result("API online");
         });
     }
 }
