@@ -1,29 +1,33 @@
-function initHabitAddPage() {
+const repo = new HabitRepository();
 
-    const habitList = document.getElementById("habitList");
-    const habitNameInput = document.getElementById("habitName");
+function renderHabits() {
+    const list = document.getElementById("habitList");
+    list.innerHTML = "";
 
-    if (!habitList || !habitNameInput) {
-        console.warn("Elementos não encontrados — a página ADD ainda não está visível.");
-        return;
-    }
-
-    window.addHabit = function () {
-        const name = habitNameInput.value;
-
-        if (name.trim().length === 0) {
-            alert("Digite um hábito antes de adicionar.");
-            return;
-        }
-
+    repo.getAll().forEach(habit => {
         const li = document.createElement("li");
-        li.textContent = name;
-        habitList.appendChild(li);
+        li.textContent = habit.name;
 
-        habitNameInput.value = "";
-    };
+        // Adicionando botão de remoção opcional
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "x";
+        removeBtn.onclick = () => {
+            repo.remove(habit.id);
+            renderHabits();
+        };
+
+        li.appendChild(removeBtn);
+        list.appendChild(li);
+    });
 }
-    document.addEventListener("DOMContentLoaded", () => {
-    initHabitAddPage();
-});
 
+function addHabit() {
+    const name = document.getElementById("habitName").value.trim();
+    if (!name) return alert("Digite um nome válido.");
+
+    repo.add(name);
+    document.getElementById("habitName").value = "";
+    renderHabits();
+}
+
+document.addEventListener("DOMContentLoaded", renderHabits);
