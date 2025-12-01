@@ -15,10 +15,10 @@ public class HabitController {
     }
 
     private void registerRoutes(Javalin app) {
-        app.post("/habit", this::createHabit);
-        app.get("/habit/:userId", this::getHabitsByUser);
-        app.put("/habit/:id", this::updateHabit);
-        app.delete("/habit/:id", this::deleteHabit);
+        app.post("/habits", this::createHabit);
+        app.get("/habits/:userId", this::getHabitsByUser);
+        app.put("/habits/:id", this::updateHabit);
+        app.delete("/habits/:id", this::deleteHabit);
     }
 
     private void createHabit(Context ctx) {
