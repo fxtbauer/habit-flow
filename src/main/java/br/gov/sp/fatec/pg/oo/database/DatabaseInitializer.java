@@ -32,7 +32,6 @@ public class DatabaseInitializer {
             System.out.println("Tabelas CRIADAS com sucesso!");
 
         } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 }
