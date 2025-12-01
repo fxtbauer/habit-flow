@@ -1,5 +1,7 @@
 package br.gov.sp.fatec.pg.oo;
 
+import br.gov.sp.fatec.pg.oo.controller.HabitController;
+import br.gov.sp.fatec.pg.oo.controller.UserController;
 import br.gov.sp.fatec.pg.oo.database.DatabaseInitializer;
 import io.javalin.Javalin;
 
@@ -15,7 +17,10 @@ public class Main {
             res.setCharacterEncoding("UTF-8");
         });
         }).start(7070);
-        app.get("/status", ctx -> {
+        new UserController(app);
+        new HabitController(app);
+        app.get("/status", ctx ->  { 
+            // Teste
             ctx.result("API online");
         });
     }
