@@ -19,9 +19,9 @@ public class Main {
         }).start(7070);
         new UserController(app);
         new HabitController(app);
-        app.get("/", ctx ->  { 
+        app.get("/status", ctx ->  { 
             // Teste
-            ctx.result("Hello World!");
+            ctx.result("API online");
         });
     }
 }
