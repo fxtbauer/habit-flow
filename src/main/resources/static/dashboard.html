@@ -1,152 +1,76 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" x-data="dashboard()">
   <head>
     <meta charset="UTF-8" />
     <title>Dashboard - HabitFlow</title>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-      defer
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <style>
       body {
-        margin: 0;
+        font-family: Arial;
         padding: 20px;
-        font-family: "Inter", Arial, sans-serif;
-        background: #0d1117;
-        color: #e6edf3;
-      }
-
-      h1 {
-        margin-bottom: 5px;
-      }
-
-      button {
-        padding: 10px 16px;
-        background: #238636;
-        border: none;
-        border-radius: 8px;
-        color: white;
-        cursor: pointer;
-        font-weight: 600;
-        margin-bottom: 20px;
-        transition: 0.2s;
-      }
-
-      button:hover {
-        background: #2ea043;
+        background: #fafafa;
       }
 
       .habit-card {
-        background: #161b22;
-        padding: 15px;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 0 6px #0006;
-      }
-
-      .habit-card.completed {
-        background: #1b2d1b;
-        border-left: 4px solid #2ea043;
-      }
-
-      .actions {
-        display: flex;
-        gap: 10px;
-      }
-
-      .btn-ok {
-        background: #238636;
-        border-radius: 6px;
-        padding: 6px 12px;
-        color: white;
-        cursor: pointer;
-      }
-
-      .btn-ok:hover {
-        background: #2ea043;
-      }
-
-      .btn-del {
-        background: #da3633;
-        border-radius: 6px;
-        padding: 6px 12px;
-        color: white;
-        cursor: pointer;
-      }
-
-      .btn-del:hover {
-        background: #f85149;
-      }
-
-      .btn-edit {
-        background: #3b82f6;
-        border-radius: 6px;
-        padding: 6px 12px;
-        color: white;
-        cursor: pointer;
-      }
-
-      .btn-edit:hover {
-        background: #60a5fa;
-      }
-
-      .stats {
-        margin-top: 15px;
-        margin-bottom: 25px;
-        background: #161b22;
-        padding: 15px;
-        border-radius: 12px;
-        box-shadow: 0 0 4px #0005;
-      }
-
-      .progress-bar {
-        width: 100%;
-        height: 12px;
-        background: #0d1117;
+        padding: 10px;
+        background: white;
+        margin-bottom: 8px;
         border-radius: 8px;
-        margin: 8px 0;
-        overflow: hidden;
+        box-shadow: 0 0 5px #0002;
       }
 
-      .progress {
-        height: 100%;
-        background: #238636;
-        border-radius: 8px;
-        transition: width 0.3s ease;
+      .completed {
+        background: #d4edda !important;
+        text-decoration: line-through;
+      }
+
+      button {
+        padding: 10px 15px;
+        background: #007bff;
+        color: white;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
       }
     </style>
   </head>
 
-  <body x-data="dashboard()" x-init="init()">
+  <!-- CARREGA HÁBITOS AO ENTRAR -->
+  <body x-init="init()">
+    <h1>Dashboard</h1>
+    <p>Bem-vindo(a), <strong x-text="username"></strong>!</p>
 
-    <h1>HabitFlow</h1>
-    <p>Gerencie seus hábitos de forma simples e elegante</p>
+    <button @click="logout()" style="background:#dc3545; margin-bottom:15px">
+      Sair
+    </button>
 
-    <div class="stats">
-      <p x-text="`Hábitos concluídos: ${completedCount()} / ${habits.length}`"></p>
+    <br />
 
-      <div class="progress-bar">
-        <div class="progress" :style="`width: ${progressPercent()}%`"></div>
-      </div>
+    <button @click="addHabit()">Adicionar Hábito</button>
 
-      <p x-text="progressPercent() + '%'"></p>
-    </div>
+    <h2 style="margin-top: 20px">Seus hábitos:</h2>
 
-    <button @click="addHabit()">+ Novo Hábito</button>
-
+    <!-- LISTA DE HÁBITOS -->
     <template x-for="habit in habits" :key="habit.id">
       <div class="habit-card" :class="habit.completed ? 'completed' : ''">
         <strong x-text="habit.name"></strong>
 
-        <div class="actions">
-          <button class="btn-ok" @click="toggleHabit(habit)">✓</button>
-          <button class="btn-edit" @click="editHabit(habit)">Editar</button>
-          <button class="btn-del" @click="deleteHabit(habit.id)">X</button>
+        <div style="display: flex; gap: 10px; margin-top: 6px">
+          <!-- BOTÃO DE CHECK -->
+          <button
+            @click="toggleHabit(habit)"
+            style="padding: 6px; background: #28a745">
+            ✓
+          </button>
+
+          <!-- BOTÃO DE DELETE -->
+          <button
+            @click="deleteHabit(habit.id)"
+            style="padding: 6px; background: #dc3545">
+            X
+          </button>
         </div>
       </div>
     </template>
@@ -154,101 +78,95 @@
     <script>
       function dashboard() {
         return {
-          userId: null,
+          token: null,
+          username: "",
           habits: [],
 
+          // Inicializa dashboard
           init() {
-            const savedId = localStorage.getItem("userId");
-            const role = localStorage.getItem("role");
+            this.token = localStorage.getItem("token");
 
-            if (!savedId) {
+            if (!this.token) {
               window.location.href = "/login";
               return;
             }
 
-            if (role === "admin") {
-              window.location.href = "/admin";
-              return;
-            }
+            // Pega username salvo
+            this.username = localStorage.getItem("username") || "Usuário";
 
-            this.userId = savedId;
             this.loadHabits();
           },
 
+          // Carrega hábitos do usuário autenticado
           async loadHabits() {
-            const res = await fetch(`/habits/${this.userId}`);
+            const res = await fetch("/habits", {
+              headers: {
+                Authorization: this.token
+              }
+            });
+
+            if (res.status === 401) {
+              this.logout();
+              return;
+            }
+
             this.habits = await res.json();
           },
 
+          // Adiciona hábito
           async addHabit() {
             const name = prompt("Nome do hábito:");
             if (!name) return;
 
             await fetch("/habits", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: this.token
+              },
               body: JSON.stringify({
-                userId: this.userId,
-                name,
-                completed: false,
-              }),
+                name: name,
+                completed: false
+              })
             });
 
             this.loadHabits();
           },
 
+          // Alterna completed
           async toggleHabit(habit) {
             await fetch(`/habits/${habit.id}`, {
               method: "PUT",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: this.token
+              },
               body: JSON.stringify({
-                id: habit.id,
-                userId: this.userId,
                 name: habit.name,
-                completed: !habit.completed,
-              }),
+                completed: !habit.completed
+              })
             });
 
             this.loadHabits();
           },
 
+          // Delete hábito
           async deleteHabit(id) {
-            await fetch(`/habits/${id}`, { method: "DELETE" });
-            this.loadHabits();
-          },
-
-          async editHabit(habit) {
-            const newName = prompt("Novo nome para o hábito:", habit.name);
-            if (!newName.trim()) return;
-
-            await fetch(`/habits/${habit.id}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                id: habit.id,
-                userId: this.userId,
-                name: newName,
-                completed: habit.completed,
-              }),
+            await fetch(`/habits/${id}`, {
+              method: "DELETE",
+              headers: {
+                Authorization: this.token
+              }
             });
 
             this.loadHabits();
           },
 
-          completedCount() {
-            return this.habits.filter((h) => h.completed).length;
-          },
-
-          progressPercent() {
-            if (this.habits.length === 0) return 0;
-            return Math.round((this.completedCount() / this.habits.length) * 100);
-          },
-          
+          // Logout
           logout() {
-            localStorage.removeItem("userId");
-            localStorage.removeItem("role");
+            localStorage.clear();
             window.location.href = "/login";
-          },
+          }
         };
       }
     </script>
