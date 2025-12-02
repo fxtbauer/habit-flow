@@ -94,13 +94,18 @@
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) {
-            localStorage.setItem('userId', data.userId);
-            window.location.href = '/dashboard';
-        } else {
-            message = data.message;
-        }
-      })
+    if (data.success) {
+
+        // salva info do usuário para a dashboard
+        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("role", data.role);
+
+        window.location.href = "/dashboard";
+    } else {
+        message = data.message;
+    }
+})
+
     "
   >
   Entrar

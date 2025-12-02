@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" x-data="dashboard()">
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <title>Dashboard - HabitFlow</title>
@@ -122,13 +122,13 @@
     </style>
   </head>
 
-  <body x-init="init(); loadHabits()">
+  <body x-data="dashboard()" x-init="init()">
+
     <h1>HabitFlow</h1>
     <p>Gerencie seus hábitos de forma simples e elegante</p>
+
     <div class="stats">
-      <p
-        x-text="`Hábitos concluídos: ${completedCount()} / ${habits.length}`"
-      ></p>
+      <p x-text="`Hábitos concluídos: ${completedCount()} / ${habits.length}`"></p>
 
       <div class="progress-bar">
         <div class="progress" :style="`width: ${progressPercent()}%`"></div>
@@ -145,9 +145,7 @@
 
         <div class="actions">
           <button class="btn-ok" @click="toggleHabit(habit)">✓</button>
-
           <button class="btn-edit" @click="editHabit(habit)">Editar</button>
-
           <button class="btn-del" @click="deleteHabit(habit.id)">X</button>
         </div>
       </div>
@@ -159,25 +157,29 @@
           userId: null,
           habits: [],
 
-          // Proteção de rota
           init() {
             const savedId = localStorage.getItem("userId");
+            const role = localStorage.getItem("role");
 
             if (!savedId) {
               window.location.href = "/login";
               return;
             }
 
+            if (role === "admin") {
+              window.location.href = "/admin";
+              return;
+            }
+
             this.userId = savedId;
+            this.loadHabits();
           },
 
-          // Carrega hábitos
           async loadHabits() {
             const res = await fetch(`/habits/${this.userId}`);
             this.habits = await res.json();
           },
 
-          // Cria hábito
           async addHabit() {
             const name = prompt("Nome do hábito:");
             if (!name) return;
@@ -195,7 +197,6 @@
             this.loadHabits();
           },
 
-          // Alterna concluído
           async toggleHabit(habit) {
             await fetch(`/habits/${habit.id}`, {
               method: "PUT",
@@ -211,17 +212,14 @@
             this.loadHabits();
           },
 
-          // Deleta hábito
           async deleteHabit(id) {
-            await fetch(`/habits/${id}`, {
-              method: "DELETE",
-            });
-
+            await fetch(`/habits/${id}`, { method: "DELETE" });
             this.loadHabits();
           },
+
           async editHabit(habit) {
             const newName = prompt("Novo nome para o hábito:", habit.name);
-            if (!newName || newName.trim() === "") return;
+            if (!newName.trim()) return;
 
             await fetch(`/habits/${habit.id}`, {
               method: "PUT",
@@ -236,20 +234,19 @@
 
             this.loadHabits();
           },
+
           completedCount() {
             return this.habits.filter((h) => h.completed).length;
           },
 
           progressPercent() {
             if (this.habits.length === 0) return 0;
-            return Math.round(
-              (this.completedCount() / this.habits.length) * 100
-            );
+            return Math.round((this.completedCount() / this.habits.length) * 100);
           },
 
-          // Logout
           logout() {
             localStorage.removeItem("userId");
+            localStorage.removeItem("role");
             window.location.href = "/login";
           },
         };

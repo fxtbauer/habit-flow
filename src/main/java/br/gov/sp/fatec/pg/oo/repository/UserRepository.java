@@ -12,13 +12,13 @@ import br.gov.sp.fatec.pg.oo.model.User;
 
 public class UserRepository {
 
+    // Criar user
     public void createUser(User user) {
-        // SQL de INSERT
         String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
-        //  Garante o fechamento automático da conexão e do statement
+
         try (Connection conn = SQLConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-        //Mapeamento dos atributos do objeto User para os placeholders SQL.        
+
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getPassword());
             stmt.setString(3, user.getRole());
@@ -30,8 +30,30 @@ public class UserRepository {
         }
     }
 
+    //Contar quantidade de users 
+
+    public int countUsers() {
+        String sql = "SELECT COUNT(*) AS total FROM users";
+
+        try (Connection conn = SQLConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+
+            return 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    // Buscar user pelo username
+
     public User findByUsername(String username) {
-        // SQL para buscar um único usuário pelo nome de usuário (que deve ser UNIQUE)
         String sql = "SELECT * FROM users WHERE username = ?";
 
         try (Connection conn = SQLConnection.getConnection();
@@ -56,6 +78,8 @@ public class UserRepository {
         }
     }
 
+
+    // LISTAR TODOS OS USUÁRIOS
     public List<User> findAll() {
         String sql = "SELECT * FROM users";
         List<User> users = new ArrayList<>();
@@ -64,9 +88,7 @@ public class UserRepository {
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
-            // Itera sobre todos os registros retornados   
             while (rs.next()) {
-                // Cria um novo objeto User para cada linha e o adiciona à lista
                 users.add(new User(
                         rs.getInt("id"),
                         rs.getString("username"),
@@ -81,6 +103,9 @@ public class UserRepository {
             throw new RuntimeException(e);
         }
     }
+
+  
+    // Deletar pelo ID
 
     public void deleteUser(int id) {
         String sql = "DELETE FROM users WHERE id = ?";
