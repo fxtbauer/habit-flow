@@ -105,7 +105,7 @@ src/
 
 ## 2️. Clonar o repositório
 
-git clone https://github.com/usuario/habitflow.git
+git clone https://github.com/fxtbauer/habitflow.git
 
 cd habitflow
 
