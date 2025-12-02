@@ -1,21 +1,112 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" x-data="dashboard()">
   <head>
     <meta charset="UTF-8" />
-    <title>Dashboard</title>
-  </head>
+    <title>Dashboard - HabitFlow</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+</head>
 
-  <body>
+  <body x-init="loadHabits()">
     <h1>Dashboard</h1>
+    <p>Bem-vindo, usuário!</p>
+
+    <button @click="addHabit()">Adicionar Hábito</button>
+
+    <h2 style="margin-top: 20px">Seus hábitos:</h2>
+
+    <!-- LISTA DE HÁBITOS -->
+    <template x-for="habit in habits" :key="habit.id">
+      <div
+        class="habit-card"
+        :style="habit.completed ? 'background:#d4edda' : 'background:white'"
+      >
+        <strong x-text="habit.name"></strong>
+
+        <div style="display: flex; gap: 10px; margin-top: 6px">
+          <button
+            @click="toggleHabit(habit)"
+            style="
+              padding: 6px;
+              background: #28a745;
+              color: white;
+              border: none;
+              border-radius: 6px;
+            "
+          >
+            ✓
+          </button>
+
+          <button
+            @click="deleteHabit(habit.id)"
+            style="
+              padding: 6px;
+              background: #dc3545;
+              color: white;
+              border: none;
+              border-radius: 6px;
+            "
+          >
+            X
+          </button>
+        </div>
+      </div>
+    </template>
+
     <script>
-    function dashboard() {
+      function dashboard() {
         return {
+          userId: 1, // depois substitui com login real
+          habits: [],
+
+          // Carrega hábitos do usuário
           async loadHabits() {
             const res = await fetch(`/habits/${this.userId}`);
             this.habits = await res.json();
           },
-        }
-         
+
+          // Adiciona um novo hábito
+          async addHabit() {
+            const name = prompt("Nome do hábito:");
+            if (!name) return;
+
+            await fetch("/habits", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userId: this.userId,
+                name: name,
+                completed: false,
+              }),
+            });
+
+            this.loadHabits();
+          },
+
+          // Alterna (completa ↔ não completa)
+          async toggleHabit(habit) {
+            await fetch(`/habits/${habit.id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: habit.id,
+                userId: this.userId,
+                name: habit.name,
+                completed: !habit.completed,
+              }),
+            });
+
+            this.loadHabits();
+          },
+
+          // Exclui hábito
+          async deleteHabit(id) {
+            await fetch(`/habits/${id}, { method: "DELETE" }`);
+            this.loadHabits();
+          },
+        };
       }
     </script>
   </body>
