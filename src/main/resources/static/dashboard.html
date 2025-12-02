@@ -243,7 +243,7 @@
             if (this.habits.length === 0) return 0;
             return Math.round((this.completedCount() / this.habits.length) * 100);
           },
-
+          
           logout() {
             localStorage.removeItem("userId");
             localStorage.removeItem("role");

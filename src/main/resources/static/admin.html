@@ -56,6 +56,23 @@
       border-radius: 8px;
       cursor: pointer;
     }
+    .logout-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 16px;
+  background: #da3633;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  background: #f85149;
+}
   </style>
 </head>
 
@@ -79,6 +96,7 @@
       </thead>
 
       <tbody>
+        <button class="logout-btn" @click="logout()">Logout</button>
         <template x-for="u in users" :key="u.id">
           <tr>
             <td x-text="u.id"></td>
