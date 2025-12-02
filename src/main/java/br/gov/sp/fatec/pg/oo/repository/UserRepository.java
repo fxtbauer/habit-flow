@@ -13,11 +13,12 @@ import br.gov.sp.fatec.pg.oo.model.User;
 public class UserRepository {
 
     public void createUser(User user) {
+        // SQL de INSERT
         String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
-
+        //  Garante o fechamento automático da conexão e do statement
         try (Connection conn = SQLConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        //Mapeamento dos atributos do objeto User para os placeholders SQL.        
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getPassword());
             stmt.setString(3, user.getRole());
@@ -30,6 +31,7 @@ public class UserRepository {
     }
 
     public User findByUsername(String username) {
+        // SQL para buscar um único usuário pelo nome de usuário (que deve ser UNIQUE)
         String sql = "SELECT * FROM users WHERE username = ?";
 
         try (Connection conn = SQLConnection.getConnection();
@@ -62,7 +64,9 @@ public class UserRepository {
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
+            // Itera sobre todos os registros retornados   
             while (rs.next()) {
+                // Cria um novo objeto User para cada linha e o adiciona à lista
                 users.add(new User(
                         rs.getInt("id"),
                         rs.getString("username"),

@@ -86,24 +86,25 @@
       <input type="password" placeholder="Senha" x-model="password" />
 
       <button
-        @click="
-          fetch('/login', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ username, password })
-          })
-          .then(r => r.json())
-          .then(data => {
-              if (data.success) {
-                  window.location.href = '/dashboard';
-              } else {
-                  message = data.message;
-              }
-          })
-        "
-      >
-        Entrar
-      </button>
+  @click="
+    fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            localStorage.setItem('userId', data.userId);
+            window.location.href = '/dashboard';
+        } else {
+            message = data.message;
+        }
+      })
+    "
+  >
+  Entrar
+    </button>
 
       <p x-text="message"></p>
     </div>
