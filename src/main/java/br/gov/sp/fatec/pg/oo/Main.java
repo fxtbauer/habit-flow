@@ -1,5 +1,6 @@
 package br.gov.sp.fatec.pg.oo;
 
+import br.gov.sp.fatec.pg.oo.controller.ChatController;
 import br.gov.sp.fatec.pg.oo.controller.HabitController;
 import br.gov.sp.fatec.pg.oo.controller.UserController;
 import br.gov.sp.fatec.pg.oo.database.DatabaseInitializer;
@@ -17,6 +18,7 @@ public class Main {
 
         new UserController(app);
         new HabitController(app);
+        new ChatController(app);
 
         app.get("/status", ctx -> ctx.result("API online"));
         app.get("/", ctx -> ctx.redirect("/login"));

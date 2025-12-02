@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Assistente HabitFlow</title>
+
+    <style>
+        body {
+            background: #121212;
+            color: #eee;
+            font-family: Arial;
+            margin: 0;
+        }
+
+        .chat-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 10px #0008;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        #messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 12px;
+            background: #181818;
+        }
+
+        .msg-user {
+            text-align: right;
+            margin: 10px 0;
+        }
+
+        .msg-user span {
+            display: inline-block;
+            background: #3a7afe;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+
+        .msg-bot {
+            text-align: left;
+            margin: 10px 0;
+        }
+
+        .msg-bot span {
+            display: inline-block;
+            background: #272727;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+            border: 1px solid #444;
+        }
+
+        .input-area {
+            display: flex;
+            margin-top: 15px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px;
+            background: #222;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+
+        button {
+            background: #3a7afe;
+            border: none;
+            padding: 12px 20px;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #5a8aff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="chat-container">
+        <h2>💬 Assistente IA HabitFlow</h2>
+
+        <div id="messages"></div>
+
+        <div class="input-area">
+            <input id="inputMsg" type="text" placeholder="Digite sua pergunta...">
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const msgBox = document.getElementById("messages");
+            const input = document.getElementById("inputMsg");
+
+            const text = input.value.trim();
+            if (!text) return;
+
+            // coloca a mensagem do usuário
+            msgBox.innerHTML += `<div class='msg-user'><span>${text}</span></div>`;
+            input.value = "";
+            msgBox.scrollTop = msgBox.scrollHeight;
+
+            // faz a requisição
+            const res = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: text })
+            });
+
+            const data = await res.json();
+
+            // coloca resposta do bot
+            msgBox.innerHTML += `<div class='msg-bot'><span>${data.response}</span></div>`;
+            msgBox.scrollTop = msgBox.scrollHeight;
+        }
+    </script>
+
+</body>
+</html>
