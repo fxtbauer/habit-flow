@@ -35,7 +35,7 @@ public class UserController {
         }
     }
 
-     private void loginUser(Context ctx) {
+   private void loginUser(Context ctx) {
     try {
         User loginData = ctx.bodyAsClass(User.class);
 
@@ -57,6 +57,10 @@ public class UserController {
         ctx.json(Map.of("success", false, "message", "Erro no login"));
     }
 }
+
+
+
+
 
 
     private void getAllUsers(Context ctx) {
