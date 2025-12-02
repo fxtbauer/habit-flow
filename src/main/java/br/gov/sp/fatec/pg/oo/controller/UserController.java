@@ -20,7 +20,6 @@ public class UserController {
         app.post("/register", this::registerUser);
         app.post("/login", this::loginUser);
         app.get("/users", this::getAllUsers);
-        app.put("/admin/promote/{id}", this::promoteUser);
     }
 
     // Registra usuários
@@ -90,20 +89,6 @@ public class UserController {
         }
     }
 
-
-    // promove um usuário
-
-private void promoteUser(Context ctx) {
-    try {
-        int id = Integer.parseInt(ctx.pathParam("id"));
-
-        userRepository.promoteToAdmin(id);
-
-        ctx.status(200).json("Usuário promovido para ADMIN");
-    } catch (Exception e) {
-        ctx.status(400).json("Erro ao promover usuário: " + e.getMessage());
-    }
-}
     // lista um user
 
     private void getAllUsers(Context ctx) {

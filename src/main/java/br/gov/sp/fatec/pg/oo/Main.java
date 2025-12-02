@@ -14,9 +14,9 @@ public class Main {
         DatabaseInitializer.initialize();
 
         Javalin app = Javalin.create(config -> {
-            config.staticFiles.add("/static");
+        config.staticFiles.add("static");
         }).start(7070);
-
+        
         new UserController(app);
         new HabitController(app);
         new ChatController(app);

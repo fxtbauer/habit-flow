@@ -105,7 +105,7 @@ public class UserRepository {
     }
      // promove a admin
     public void promoteToAdmin(int id) {
-    String sql = "UPDATE users SET role = 'ADMIN' WHERE id = ?";
+    String sql = "UPDATE users SET role = 'admin' WHERE id = ?";
 
     try (Connection conn = SQLConnection.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
