@@ -7,14 +7,15 @@ public class DatabaseInitializer {
      public static void initialize() {
         try (Connection conn = SQLConnection.getConnection();
              Statement stmt = conn.createStatement()) {
-
+                
             // TABELA DE USUÁRIOS
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT NOT NULL UNIQUE,
                     password TEXT NOT NULL,
-                    role TEXT NOT NULL
+                    role TEXT NOT NULL,
+                    token TEXT
                 );
             """);
 
@@ -28,7 +29,6 @@ public class DatabaseInitializer {
                     FOREIGN KEY (user_id) REFERENCES users(id)
                 );
             """);
-
             System.out.println("Tabelas CRIADAS com sucesso!");
 
         } catch (SQLException e) {

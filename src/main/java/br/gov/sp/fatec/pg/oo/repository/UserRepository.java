@@ -11,7 +11,7 @@ import br.gov.sp.fatec.pg.oo.database.SQLConnection;
 import br.gov.sp.fatec.pg.oo.model.User;
 
 public class UserRepository {
-
+   
     public void createUser(User user) {
         String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
 
@@ -109,13 +109,30 @@ public class UserRepository {
 }
 
 public void promoteToAdmin(int id) {
-    String sql = "UPDATE users SET role = 'ADMIN' WHERE id = ?";
+    String sql = "UPDATE users SET role = 'admin' WHERE id = ?";
 
     try (Connection conn = SQLConnection.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
 
         stmt.setInt(1, id);
         stmt.executeUpdate();
+
+    } catch (SQLException e) {
+        throw new RuntimeException(e);
+    }
+}  
+    public int countUsers() {
+    String sql = "SELECT COUNT(*) AS total FROM users";
+
+    try (Connection conn = SQLConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+
+        if (rs.next()) {
+            return rs.getInt("total");
+        }
+
+        return 0;
 
     } catch (SQLException e) {
         throw new RuntimeException(e);

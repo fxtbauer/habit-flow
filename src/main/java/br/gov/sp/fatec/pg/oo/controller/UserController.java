@@ -23,10 +23,19 @@ public class UserController {
     }
 
     private void register(Context ctx) {
-        User user = ctx.bodyAsClass(User.class);
-        repo.createUser(user);
-        ctx.status(201).json("Usuário criado!");
+    User user = ctx.bodyAsClass(User.class);
+
+    // Se não existir nenhum usuário → vira admin
+    if (repo.countUsers() == 0) {
+        user.setRole("admin");
+    } else {
+        user.setRole("user");
     }
+
+    repo.createUser(user);
+    ctx.status(201).json("Usuário criado!");
+}
+
 
     private void login(Context ctx) {
         User data = ctx.bodyAsClass(User.class);
@@ -54,3 +63,4 @@ public class UserController {
         ctx.json(repo.findAll());
     }
 }
+    
