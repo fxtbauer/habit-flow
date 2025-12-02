@@ -4,102 +4,53 @@ import java.util.Map;
 
 import br.gov.sp.fatec.pg.oo.model.User;
 import br.gov.sp.fatec.pg.oo.repository.UserRepository;
+import br.gov.sp.fatec.pg.oo.security.TokenGenerator;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserRepository repo = new UserRepository();
 
     public UserController(Javalin app) {
-        this.userRepository = new UserRepository();
         registerRoutes(app);
     }
 
     private void registerRoutes(Javalin app) {
-        app.post("/register", this::registerUser);
-        app.post("/login", this::loginUser);
-        app.get("/users", this::getAllUsers);
+        app.post("/register", this::register);
+        app.post("/login", this::login);
+        app.get("/users", this::getAll);
     }
 
-    // Registra usuários
-    private void registerUser(Context ctx) {
-        try {
-            User user = ctx.bodyAsClass(User.class);
+    private void register(Context ctx) {
+        User user = ctx.bodyAsClass(User.class);
+        repo.createUser(user);
+        ctx.status(201).json("Usuário criado!");
+    }
 
-            // Se for o primeiro usuário → vira admin automaticamente
-            int count = userRepository.countUsers();
-            if (count == 0) {
-                user.setRole("admin");
-            } else {
-                user.setRole("user");
-            }
+    private void login(Context ctx) {
+        User data = ctx.bodyAsClass(User.class);
+        User user = repo.findByUsername(data.getUsername());
 
-            userRepository.createUser(user);
+        if (user == null)
+            { ctx.json(Map.of("success", false, "message", "Usuário não encontrado")); return; }
 
-            ctx.status(201).json(Map.of(
+        if (!user.getPassword().equals(data.getPassword()))
+            { ctx.json(Map.of("success", false, "message", "Senha incorreta")); return; }
+
+        String token = TokenGenerator.generate();
+        repo.saveToken(user.getId(), token);
+
+        ctx.json(Map.of(
                 "success", true,
-                "message", "Usuário criado com sucesso!"
-            ));
-
-        } catch (Exception e) {
-            ctx.status(400).json(Map.of(
-                "success", false,
-                "message", "Erro ao criar usuário: " + e.getMessage()
-            ));
-        }
+                "token", token,
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "role", user.getRole()
+        ));
     }
 
-    // LOGIN
-    private void loginUser(Context ctx) {
-        try {
-            User loginData = ctx.bodyAsClass(User.class);
-
-            User user = userRepository.findByUsername(loginData.getUsername());
-
-            if (user == null) {
-                ctx.json(Map.of(
-                    "success", false,
-                    "message", "Usuário não encontrado"
-                ));
-                return;
-            }
-
-            if (!user.getPassword().equals(loginData.getPassword())) {
-                ctx.json(Map.of(
-                    "success", false,
-                    "message", "Senha incorreta"
-                ));
-                return;
-            }
-
-            // Login OK → devolvemos ID e ROLE
-            ctx.json(Map.of(
-                "success", true,
-                "userId", user.getId(),
-                "role", user.getRole(),
-                "message", "Login realizado com sucesso"
-            ));
-
-        } catch (Exception e) {
-            ctx.status(400).json(Map.of(
-                "success", false,
-                "message", "Erro no login"
-            ));
-        }
-    }
-
-    // lista um user
-
-    private void getAllUsers(Context ctx) {
-        try {
-            ctx.json(userRepository.findAll());
-        } catch (Exception e) {
-            ctx.status(400).json(Map.of(
-                "success", false,
-                "message", "Erro ao listar usuários"
-            ));
-        }
+    private void getAll(Context ctx) {
+        ctx.json(repo.findAll());
     }
 }
-
