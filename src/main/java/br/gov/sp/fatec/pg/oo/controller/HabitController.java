@@ -16,9 +16,10 @@ public class HabitController {
 
     private void registerRoutes(Javalin app) {
         app.post("/habits", this::createHabit);
-        app.get("/habits/:userId", this::getHabitsByUser);
-        app.put("/habits/:id", this::updateHabit);
-        app.delete("/habits/:id", this::deleteHabit);
+        app.get("/habits/{userId}", this::getHabitsByUser);
+        app.put("/habits/{id}", this::updateHabit);
+        app.delete("/habits/{id}", this::deleteHabit);
+
     }
 
     private void createHabit(Context ctx) {
@@ -33,7 +34,7 @@ public class HabitController {
 
     private void getHabitsByUser(Context ctx) {
         try {
-            int userId = Integer.parseInt(ctx.pathParam("userId"));
+            int userId = ctx.pathParamAsClass("userId", Integer.class).get();
             ctx.json(habitRepository.getHabitsByUser(userId));
         } catch (Exception e) {
             ctx.status(400).json("Erro ao buscar hábitos: " + e.getMessage());
@@ -42,7 +43,7 @@ public class HabitController {
 
     private void updateHabit(Context ctx) {
         try {
-            int id = Integer.parseInt(ctx.pathParam("id"));
+            int id = ctx.pathParamAsClass("id", Integer.class).get();
             Habit habit = ctx.bodyAsClass(Habit.class);
             habit.setId(id);
 
