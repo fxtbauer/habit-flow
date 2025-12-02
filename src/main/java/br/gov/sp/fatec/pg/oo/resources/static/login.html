@@ -16,6 +16,16 @@
     <input type="text" placeholder="Username" x-model="username" />
     <input type="password" placeholder="Password" x-model="password" />
 
-    <button>Entrar</button>
+    <button
+  @click="
+    fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    })
+  "
+>
+  Entrar
+</button>
   </body>
 </html>
