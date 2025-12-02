@@ -85,7 +85,7 @@
     </style>
   </head>
 
-  <body x-init="loadHabits()">
+ <body x-init="init(); loadHabits()">
     <h1>HabitFlow</h1>
     <p>Gerencie seus hábitos de forma simples e elegante</p>
 
@@ -103,57 +103,80 @@
     </template>
 
     <script>
-      function dashboard() {
-        return {
-          userId: 1,
-          habits: [],
+  function dashboard() {
+    return {
 
-          async loadHabits() {
-            const res = await fetch(`/habits/${this.userId}`);
-            this.habits = await res.json();
-          },
+      userId: null,
+      habits: [],
 
-          async addHabit() {
-            const name = prompt("Nome do hábito:");
-            if (!name) return;
+      // Proteção de rota
+      init() {
+        const savedId = localStorage.getItem("userId");
 
-            await fetch("/habits", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                userId: this.userId,
-                name: name,
-                completed: false,
-              }),
-            });
+        if (!savedId) {
+          window.location.href = "/login";
+          return;
+        }
 
-            this.loadHabits();
-          },
+        this.userId = savedId;
+      },
 
-          async toggleHabit(habit) {
-            await fetch(`/habits/${habit.id}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                id: habit.id,
-                userId: this.userId,
-                name: habit.name,
-                completed: !habit.completed,
-              }),
-            });
+      // Carrega hábitos
+      async loadHabits() {
+        const res = await fetch(`/habits/${this.userId}`);
+        this.habits = await res.json();
+      },
 
-            this.loadHabits();
-          },
+      // Cria hábito
+      async addHabit() {
+        const name = prompt("Nome do hábito:");
+        if (!name) return;
 
-          async deleteHabit(id) {
-            await fetch(`/habits/${id}`, {
-              method: "DELETE",
-            });
+        await fetch("/habits", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: this.userId,
+            name,
+            completed: false,
+          }),
+        });
 
-            this.loadHabits();
-          },
-        };
-      }
-    </script>
+        this.loadHabits();
+      },
+
+      // Alterna concluído
+      async toggleHabit(habit) {
+        await fetch(`/habits/${habit.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: habit.id,
+            userId: this.userId,
+            name: habit.name,
+            completed: !habit.completed,
+          }),
+        });
+
+        this.loadHabits();
+      },
+
+      // Deleta hábito
+      async deleteHabit(id) {
+        await fetch(`/habits/${id}`, {
+          method: "DELETE",
+        });
+
+        this.loadHabits();
+      },
+
+      // Logout
+      logout() {
+        localStorage.removeItem("userId");
+        window.location.href = "/login";
+      },
+    };
+  }
+</script>
   </body>
 </html>
