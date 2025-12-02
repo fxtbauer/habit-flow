@@ -83,5 +83,31 @@ public class HabitRepository{
             throw new RuntimeException(e);
         }
     }
+    public List<Habit> getAllHabits() {
+    String sql = "SELECT * FROM habits";
+    List<Habit> habits = new ArrayList<>();
+
+    try (Connection conn = SQLConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+
+        while (rs.next()) {
+            Habit h = new Habit();
+            h.setId(rs.getInt("id"));
+            h.setUserId(rs.getInt("user_id"));
+            h.setName(rs.getString("name"));
+            h.setCompleted(rs.getInt("completed") == 1);
+
+            habits.add(h);
+        }
+
+    } catch (SQLException e) {
+        throw new RuntimeException(e);
+    }
+
+    return habits;
+}
+
+    
 
 }

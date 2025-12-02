@@ -1,5 +1,7 @@
 package br.gov.sp.fatec.pg.oo.controller;
 
+import java.util.List;
+
 import br.gov.sp.fatec.pg.oo.model.Habit;
 import br.gov.sp.fatec.pg.oo.repository.HabitRepository;
 import io.javalin.Javalin;
@@ -19,7 +21,13 @@ public class HabitController {
         app.get("/habits/{userId}", this::getHabitsByUser);
         app.put("/habits/{id}", this::updateHabit);
         app.delete("/habits/{id}", this::deleteHabit);
+        app.get("/admin/habits", this::getAllHabits);
 
+    }
+
+    private void getAllHabits(Context ctx) {
+        List<Habit> habits = habitRepository.getAllHabits();
+        ctx.json(habits);
     }
 
     private void createHabit(Context ctx) {

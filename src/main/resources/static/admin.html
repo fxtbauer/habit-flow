@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-br" x-data="adminPage()" x-init="init()">
-  <head>
+<html lang="pt-br">
+<head>
     <meta charset="UTF-8" />
     <title>Admin - HabitFlow</title>
-    <script
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-      defer
-    ></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
     <style>
       body {
@@ -31,8 +29,7 @@
         margin-top: 15px;
       }
 
-      th,
-      td {
+      th, td {
         padding: 10px;
         border-bottom: 1px solid #30363d;
         text-align: left;
@@ -46,27 +43,12 @@
         color: white;
       }
 
-      .btn-promote {
-        background: #3b82f6;
-      }
-      .btn-promote:hover {
-        background: #60a5fa;
-      }
+      .btn-promote { background: #3b82f6; }
+      .btn-promote:hover { background: #60a5fa; }
 
-      .btn-delete {
-        background: #da3633;
-      }
-      .btn-delete:hover {
-        background: #f85149;
-      }
+      .btn-delete { background: #da3633; }
+      .btn-delete:hover { background: #f85149; }
 
-      .logout {
-        background: #da3633;
-        float: right;
-        padding: 10px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-      }
       .logout-btn {
         position: absolute;
         top: 20px;
@@ -81,94 +63,125 @@
         transition: 0.2s;
       }
 
-      .logout-btn:hover {
-        background: #f85149;
-      }
+      .logout-btn:hover { background: #f85149; }
     </style>
-  </head>
+</head>
 
-  <body>
-    <div class="container">
-      <h1>Painel Administrativo</h1>
-      <p>Gerencie usuários registrados</p>
+<body x-data="adminPage()" x-init="init()">
 
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Usuário</th>
-            <th>Função</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
+<button class="logout-btn" @click="logout()">Logout</button>
 
-        <tbody>
-          <button class="logout-btn" @click="logout()">Logout</button>
-          <template x-for="u in users" :key="u.id">
-            <tr>
-              <td x-text="u.id"></td>
-              <td x-text="u.username"></td>
-              <td x-text="u.role"></td>
-              <td>
-                <button
-                  class="btn btn-promote"
-                  @click="promote(u.id)"
-                  x-show="u.role !== 'admin'"
-                >
-                  Tornar Admin
-                </button>
+<div class="container">
+  <h1>Painel Administrativo</h1>
+  <p>Gerencie usuários registrados</p>
 
-                <button class="btn btn-delete" @click="removeUser(u.id)">
-                  Excluir
-                </button>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-    </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuário</th>
+        <th>Função</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
 
-    <script>
-      function adminPage() {
-        return {
-          users: [],
+    <tbody>
+      <template x-for="u in users" :key="u.id">
+        <tr>
+          <td x-text="u.id"></td>
+          <td x-text="u.username"></td>
+          <td x-text="u.role"></td>
 
-          async init() {
+          <td>
+            <button
+              class="btn btn-promote"
+              @click="promote(u.id)"
+              x-show="u.role !== 'admin'"
+            >
+              Tornar Admin
+            </button>
+
+            <button class="btn btn-delete" @click="removeUser(u.id)">
+              Excluir
+            </button>
+          </td>
+        </tr>
+      </template>
+    </tbody>
+  </table>
+
+  <!-- TABELA DE HÁBITOS -->
+
+  <h2 style="margin-top: 30px;">Hábitos do Sistema</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User ID</th>
+        <th>Nome</th>
+        <th>Concluído</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <template x-for="h in habits" :key="h.id">
+        <tr>
+          <td x-text="h.id"></td>
+          <td x-text="h.userId"></td>
+          <td x-text="h.name"></td>
+          <td x-text="h.completed ? 'Sim' : 'Não'"></td>
+        </tr>
+      </template>
+    </tbody>
+  </table>
+</div>
+
+<script>
+function adminPage() {
+    return {
+        users: [],
+        habits: [],
+
+        async init() {
             const role = localStorage.getItem("role");
 
             if (role !== "admin") {
-              window.location.href = "/login";
-              return;
+                window.location.href = "/login";
+                return;
             }
 
             this.loadUsers();
-          },
+            this.loadHabits();
+        },
 
-          async loadUsers() {
+        async loadUsers() {
             const res = await fetch("/admin/users");
             this.users = await res.json();
-          },
+        },
 
-          async promote(id) {
-            await fetch(`/admin/promote/${id}`, {
-              method: "PUT",
-            });
+        async loadHabits() {
+            const res = await fetch("/admin/habits");
+            this.habits = await res.json();
+        },
+
+        async promote(id) {
+            await fetch(`/admin/promote/${id}`, { method: "PUT" });
             this.loadUsers();
-          },
+        },
 
-          async removeUser(id) {
-            await fetch(`/admin/delete/${id}`, {
-              method: "DELETE",
-            });
+        async removeUser(id) {
+            await fetch(`/admin/delete/${id}`, { method: "DELETE" });
             this.loadUsers();
-          },
+        },
 
-          logout() {
+        logout() {
             localStorage.clear();
             window.location.href = "/login";
-          },
-        };
-      }
-    </script>
-  </body>
+        }
+    };
+}
+</script>
+
+</body>
 </html>
