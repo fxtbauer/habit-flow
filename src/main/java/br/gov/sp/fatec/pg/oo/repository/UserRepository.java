@@ -105,18 +105,19 @@ public class UserRepository {
     }
      // promove a admin
     public void promoteToAdmin(int id) {
-        String sql = "UPDATE users SET role = 'admin' WHERE id = ?";
+    String sql = "UPDATE users SET role = 'ADMIN' WHERE id = ?";
 
-            try (Connection conn = SQLConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql)) {
+    try (Connection conn = SQLConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                stmt.setInt(1, id);
-                stmt.executeUpdate();
+        stmt.setInt(1, id);
+        stmt.executeUpdate();
 
-            } catch (SQLException e) {
-            throw new RuntimeException(e);
-            }
+    } catch (SQLException e) {
+        throw new RuntimeException(e);
     }
+}
+
   
     // Deletar pelo ID
 

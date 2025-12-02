@@ -4,7 +4,6 @@ import br.gov.sp.fatec.pg.oo.controller.AdminController;
 import br.gov.sp.fatec.pg.oo.controller.ChatController;
 import br.gov.sp.fatec.pg.oo.controller.HabitController;
 import br.gov.sp.fatec.pg.oo.controller.UserController;
-import br.gov.sp.fatec.pg.oo.controller.AdminController;
 import br.gov.sp.fatec.pg.oo.database.DatabaseInitializer;
 import io.javalin.Javalin;
 
@@ -28,5 +27,6 @@ public class Main {
 
         app.get("/login", ctx -> ctx.redirect("/login.html"));
         app.get("/dashboard", ctx -> ctx.redirect("/dashboard.html"));
+        app.get("/admin", ctx -> ctx.redirect("/admin.html"));
     }
 }
