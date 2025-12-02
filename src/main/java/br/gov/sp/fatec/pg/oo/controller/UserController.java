@@ -16,73 +16,94 @@ public class UserController {
         registerRoutes(app);
     }
 
-     private void registerRoutes(Javalin app) {
-
+    private void registerRoutes(Javalin app) {
         app.post("/register", this::registerUser);
         app.post("/login", this::loginUser);
         app.get("/users", this::getAllUsers);
     }
 
+    // -----------------------------
+    // REGISTRO DE USUÁRIO
+    // -----------------------------
     private void registerUser(Context ctx) {
         try {
             User user = ctx.bodyAsClass(User.class);
 
+            // Se for o primeiro usuário → vira admin automaticamente
+            int count = userRepository.countUsers();
+            if (count == 0) {
+                user.setRole("admin");
+            } else {
+                user.setRole("user");
+            }
+
             userRepository.createUser(user);
 
-            ctx.status(201).json("Usuário criado com sucesso!");
+            ctx.status(201).json(Map.of(
+                "success", true,
+                "message", "Usuário criado com sucesso!"
+            ));
+
         } catch (Exception e) {
-            ctx.status(400).json("Erro ao criar usuário: " + e.getMessage());
+            ctx.status(400).json(Map.of(
+                "success", false,
+                "message", "Erro ao criar usuário: " + e.getMessage()
+            ));
         }
     }
 
-   private void loginUser(Context ctx) {
-    try {
-        User loginData = ctx.bodyAsClass(User.class);
+    // -----------------------------
+    // LOGIN
+    // -----------------------------
+    private void loginUser(Context ctx) {
+        try {
+            User loginData = ctx.bodyAsClass(User.class);
 
-        User user = userRepository.findByUsername(loginData.getUsername());
+            User user = userRepository.findByUsername(loginData.getUsername());
 
-        if (user == null) {
+            if (user == null) {
+                ctx.json(Map.of(
+                    "success", false,
+                    "message", "Usuário não encontrado"
+                ));
+                return;
+            }
+
+            if (!user.getPassword().equals(loginData.getPassword())) {
+                ctx.json(Map.of(
+                    "success", false,
+                    "message", "Senha incorreta"
+                ));
+                return;
+            }
+
+            // Login OK → devolvemos ID e ROLE
             ctx.json(Map.of(
-                "success", false,
-                "message", "Usuário não encontrado"
+                "success", true,
+                "userId", user.getId(),
+                "role", user.getRole(),
+                "message", "Login realizado com sucesso"
             ));
-            return;
-        }
 
-        if (!user.getPassword().equals(loginData.getPassword())) {
-            ctx.json(Map.of(
+        } catch (Exception e) {
+            ctx.status(400).json(Map.of(
                 "success", false,
-                "message", "Senha incorreta"
+                "message", "Erro no login"
             ));
-            return;
         }
-
-        // Login válido -> retornamos userId para a sessão
-        ctx.json(Map.of(
-            "success", true,
-            "userId", user.getId(),
-            "message", "Login realizado com sucesso"
-        ));
-
-    } catch (Exception e) {
-        ctx.json(Map.of(
-            "success", false,
-            "message", "Erro no login"
-        ));
     }
-}
 
-
-
-
-
-
-
+    // -----------------------------
+    // LISTAR TODOS OS USUÁRIOS
+    // -----------------------------
     private void getAllUsers(Context ctx) {
         try {
             ctx.json(userRepository.findAll());
         } catch (Exception e) {
-            ctx.status(400).json("Erro ao listar usuários: " + e.getMessage());
+            ctx.status(400).json(Map.of(
+                "success", false,
+                "message", "Erro ao listar usuários"
+            ));
         }
     }
 }
