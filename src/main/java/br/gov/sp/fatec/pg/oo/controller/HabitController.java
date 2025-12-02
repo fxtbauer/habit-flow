@@ -20,6 +20,8 @@ public class HabitController {
         app.post("/habits", this::create);
         app.put("/habits/{id}", this::update);
         app.delete("/habits/{id}", this::delete);
+        app.get("/admin/habits", this::getAllHabits);
+
     }
 
     private void list(Context ctx) {
@@ -60,4 +62,9 @@ public class HabitController {
         repo.deleteHabit(Integer.parseInt(ctx.pathParam("id")));
         ctx.json("Removido!");
     }
+    private void getAllHabits(Context ctx) {
+    HabitRepository repo = new HabitRepository();
+    ctx.json(repo.getAllHabits());
+}
+
 }
