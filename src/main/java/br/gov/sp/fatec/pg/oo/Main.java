@@ -23,5 +23,10 @@ public class Main {
             // Teste
             ctx.result("API online");
         });
+
+        app.get("/", ctx -> ctx.redirect("/login"));
+        app.get("/login", ctx -> ctx.redirect("/login.html"));
+        app.get("/dashboard", ctx -> ctx.redirect("/dashboard.html"));
+
     }
 }
