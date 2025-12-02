@@ -1,183 +1,213 @@
- HabitFlow — Gerenciador de Hábitos
+# HabitFlow — Sistema de Gerenciamento de Hábitos (Java + Javalin + SQLite)
 
-HabitFlow é uma aplicação web completa para criação, acompanhamento e conclusão de hábitos diários.
-O projeto inclui back-end em Java com SQLite, autenticação via token, painel administrativo e uma interface moderna em estilo dark.
+Projeto desenvolvido para a disciplina de Programação Orientada a Objetos (POO).  
+O sistema implementa um fluxo completo de autenticação, criação de hábitos e painel administrativo.
 
- Tecnologias Utilizadas
-Backend
+---
 
-Java 17+
+# Funcionalidades
 
-Servlets (Jakarta EE)
+### Usuário
 
-SQLite
+- Cadastro de usuário
+- Login com geração de token
+- Primeiro usuário criado vira **admin** automaticamente
+- Armazenamento de sessão no `localStorage`
+- Dashboard com:
+  - Criação de hábitos
+  - Listagem de hábitos
+  - Toggle (concluir / desfazer)
+  - Exclusão de hábito
+  - Exibição da porcentagem concluída
 
-JDBC
+### Admin
 
-Arquitetura em camadas (Controller, Repository, Model, Security)
+- Painel administrativo (ao logar como admin digite no final admin.html)
+- Listagem de todos os usuários
+- Promover usuários para admin
+- Excluir usuários
+- Listagem global de hábitos do sistema (`/admin/habits`)
 
-Frontend
+### Interface (Frontend)
 
-HTML5
+Inspirada no visual dark do GitHub:
 
-CSS (tema dark)
+- Login minimalista e responsivo
+- Dashboard em dark mode
+- Cards de hábito com botões
+- Painel admin escuro e moderno
 
-Alpine.js
+---
 
-LocalStorage para sessão do usuário
+# 🛠 Tecnologias Utilizadas
 
- Funcionalidades
- Autenticação
+### Backend
 
-Login com token JWT-like simples (gerado manualmente no servidor)
+- **Java 21**
+- **Javalin 6**
+- **Maven**
+- **SQLite**
+- Arquitetura MVC
 
-Proteção de rotas usando AuthMiddleware
+### Frontend
 
-Sessão salva no navegador via LocalStorage
+- **HTML + CSS**
+- **Alpine.js**
+- Dark mode customizado
 
- Usuários
+---
 
-Cadastro de novos usuários
+# Estrutura de Pastas
 
-Login seguro
-
-Painel de hábitos exclusivo para cada usuário
-
-Marcar e desmarcar hábitos como concluídos
-
-Percentual de progresso automático
-
-🛠️ Administração
-
-Disponível apenas para role ADMIN:
-
-Listagem de todos os usuários
-
-Remoção de usuários
-
-Promoção para ADMIN
-
-Gerenciamento global do sistema
-
- Hábitos
-
-Criar hábito
-
-Excluir hábito
-
-Marcar como concluído (checkbox interativo)
-
-Contador de progresso exibido no dashboard
-
- Estrutura do Projeto
 src/
- ├── controller/
- │    ├── AuthController.java
- │    ├── DashboardController.java
- │    ├── HabitController.java
- │    └── AdminController.java
- │
- ├── repository/
- │    ├── UserRepository.java
- │    ├── HabitRepository.java
- │    └── Database.java
- │
- ├── security/
- │    ├── AuthMiddleware.java
- │    └── TokenGenerator.java
- │
- ├── model/
- │    ├── User.java
- │    └── Habit.java
- │
- └── util/
-      └── DatabaseInitializer.java
+└── main/
+├── java/br/gov/sp/fatec/pg/oo/
+│ ├── controller/
+│ │ ├── UserController.java
+│ │ ├── HabitController.java
+│ │ └── AdminController.java
+│ │
+│ ├── repository/
+│ │ ├── UserRepository.java
+│ │ └── HabitRepository.java
+│ │
+│ ├── security/
+│ │ ├── TokenGenerator.java
+│ │ └── AuthMiddleware.java
+│ │
+│ ├── database/
+│ │ ├── SQLConnection.java
+│ │ └── DatabaseInitializer.java
+│ │
+│ ├── model/
+│ │ ├── User.java
+│ │ └── Habit.java
+│ │
+│ └── Main.java
+│
+└── resources/static/
+├── login.html
+├── dashboard.html
+├── admin.html
+├── test_habitflow.js
 
- Como Rodar o Projeto
-1. Clone o repositório
+---
+
+# Como Rodar o Projeto
+
+## Pré-requisitos
+
+- Java 17+
+- Maven
+- Navegador (Chrome recomendado)
+
+---
+
+## 2️. Clonar o repositório
+
 git clone https://github.com/usuario/habitflow.git
+
 cd habitflow
 
-2. Inicie o servidor
+---
 
-Use Tomcat, Jetty ou outro container Java.
+## 3️. Rodar o servidor Javalin
 
-Coloque o projeto em:
+execute a classe: Main.java
 
-/webapps/habitflow
+O servidor iniciará em:
 
+http://localhost:7070
 
-E inicie o servidor.
+---
 
-3. O banco será criado automaticamente
+# 🗄 Banco de Dados
 
-O arquivo:
+O arquivo SQLite é criado automaticamente:
 
 habitflow.db
 
+Com as tabelas:
 
-é gerado na primeira execução com:
+- **users**
+- **habits**
 
-Tabela de usuários
+Caso queira resetar tudo:
 
-Tabela de hábitos
+→ Delete o arquivo `habitflow.db`  
+→ Rode a aplicação novamente
 
-Criação automática de usuário admin (opcional)
+---
 
- Usuário Admin padrão (opcional)
+# Rotas Principais
 
-Se habilitado no DatabaseInitializer:
+## Autenticação
 
-username: admin
-senha: admin
-
- Rotas principais
-Autenticação
-POST /login
 POST /register
+POST /login
 
-Dashboard
-GET /dashboard
+## Hábitos
 
-Hábitos
-GET /api/habits
-POST /api/habits/create
-PUT /api/habits/{id}/toggle
-DELETE /api/habits/{id}
+GET /habits
+POST /habits
+PUT /habits/{id}
+DELETE /habits/{id}
 
-Admin
-GET /admin
+## Área Admin
+
+GET /admin/users
+GET /admin/habits
 PUT /admin/promote/{id}
-DELETE /admin/{id}
+DELETE /admin/delete/{id}
 
- Frontend
+---
 
-Interface moderna inspirada no GitHub Dark:
+# Testes
 
-Login estiloso
+O arquivo:
 
-Dashboard escuro com cards
+/static/test_habitflow.js
 
-Progresso de hábitos com porcentagem dinâmica
+executa os testes completos da API:
 
-Botão de logout
+- registro
+- login
+- CRUD hábitos
+- CRUD admin
+- promover
+- excluir
 
-Design responsivo
+### Como Rodar
 
- Screenshots (opcionais)
+1. Abra o navegador
+2. Vá para:
 
-(Adicionar se quiser posteriormente)
+http://localhost:7070/login.html
 
-Tela de Login
+3. Pressione **F12** (Console)
+4. Cole o conteúdo do arquivo
+5. Aperte **Enter**
 
-Dashboard
+Você verá algo assim:
 
-Painel Admin
+INICIANDO TESTES HABITFLOW
+Registro admin -> 201
+Login admin -> 200
+Criar hábito -> 201
+...
+TESTES CONCLUÍDOS
 
- Contribuição
+---
 
-Pull Requests são bem-vindos!
+# Licença
 
- Licença
+Projeto sob licença **MIT** — livre para uso e modificação.
 
-Projeto sob licença MIT — livre para uso, modificação e distribuição.
+---
+
+# Desenvolvido por
+
+**Ruan Bauer**
+**Natan Sandoval**  
+FATEC Praia Grande — 2025  
+Disciplina: Programação Orientada a Objetos
