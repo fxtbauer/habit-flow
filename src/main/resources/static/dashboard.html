@@ -3,54 +3,101 @@
   <head>
     <meta charset="UTF-8" />
     <title>Dashboard - HabitFlow</title>
+
     <script
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
       defer
     ></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: "Inter", Arial, sans-serif;
+        background: #0d1117;
+        color: #e6edf3;
+      }
+
+      h1 {
+        margin-bottom: 5px;
+      }
+
+      button {
+        padding: 10px 16px;
+        background: #238636;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        margin-bottom: 20px;
+        transition: 0.2s;
+      }
+
+      button:hover {
+        background: #2ea043;
+      }
+
+      .habit-card {
+        background: #161b22;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 0 6px #0006;
+      }
+
+      .habit-card.completed {
+        background: #1b2d1b;
+        border-left: 4px solid #2ea043;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn-ok {
+        background: #238636;
+        border-radius: 6px;
+        padding: 6px 12px;
+        color: white;
+        cursor: pointer;
+      }
+
+      .btn-ok:hover {
+        background: #2ea043;
+      }
+
+      .btn-del {
+        background: #da3633;
+        border-radius: 6px;
+        padding: 6px 12px;
+        color: white;
+        cursor: pointer;
+      }
+
+      .btn-del:hover {
+        background: #f85149;
+      }
+    </style>
   </head>
 
   <body x-init="loadHabits()">
-    <h1>Dashboard</h1>
-    <p>Bem-vindo, usuário!</p>
+    <h1>HabitFlow</h1>
+    <p>Gerencie seus hábitos de forma simples e elegante</p>
 
-    <button @click="addHabit()">Adicionar Hábito</button>
+    <button @click="addHabit()">+ Novo Hábito</button>
 
-    <h2 style="margin-top: 20px">Seus hábitos:</h2>
-
-    <!-- LISTA DE HÁBITOS -->
     <template x-for="habit in habits" :key="habit.id">
-      <div
-        class="habit-card"
-        :style="habit.completed ? 'background:#d4edda' : 'background:white'"
-      >
+      <div class="habit-card" :class="habit.completed ? 'completed' : ''">
         <strong x-text="habit.name"></strong>
 
-        <div style="display: flex; gap: 10px; margin-top: 6px">
-          <button
-            @click="toggleHabit(habit)"
-            style="
-              padding: 6px;
-              background: #28a745;
-              color: white;
-              border: none;
-              border-radius: 6px;
-            "
-          >
-            ✓
-          </button>
-
-          <button
-            @click="deleteHabit(habit.id)"
-            style="
-              padding: 6px;
-              background: #dc3545;
-              color: white;
-              border: none;
-              border-radius: 6px;
-            "
-          >
-            X
-          </button>
+        <div class="actions">
+          <button class="btn-ok" @click="toggleHabit(habit)">✓</button>
+          <button class="btn-del" @click="deleteHabit(habit.id)">X</button>
         </div>
       </div>
     </template>
@@ -58,16 +105,14 @@
     <script>
       function dashboard() {
         return {
-          userId: 1, // depois substitui com login real
+          userId: 1,
           habits: [],
 
-          // Carrega hábitos do usuário
           async loadHabits() {
             const res = await fetch(`/habits/${this.userId}`);
             this.habits = await res.json();
           },
 
-          // Adiciona um novo hábito
           async addHabit() {
             const name = prompt("Nome do hábito:");
             if (!name) return;
@@ -85,7 +130,6 @@
             this.loadHabits();
           },
 
-          // Alterna (completa ↔ não completa)
           async toggleHabit(habit) {
             await fetch(`/habits/${habit.id}`, {
               method: "PUT",
@@ -101,9 +145,7 @@
             this.loadHabits();
           },
 
-          // Exclui hábito
           async deleteHabit(id) {
-            console.log("Deletando hábito:", id);
             await fetch(`/habits/${id}`, {
               method: "DELETE",
             });
