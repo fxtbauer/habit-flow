@@ -131,7 +131,7 @@ Se habilitado no DatabaseInitializer:
 username: admin
 senha: admin
 
-🔗 Rotas principais
+ Rotas principais
 Autenticação
 POST /login
 POST /register
@@ -164,7 +164,7 @@ Botão de logout
 
 Design responsivo
 
-📸 Screenshots (opcionais)
+ Screenshots (opcionais)
 
 (Adicionar se quiser posteriormente)
 
@@ -178,6 +178,6 @@ Painel Admin
 
 Pull Requests são bem-vindos!
 
-📄 Licença
+ Licença
 
 Projeto sob licença MIT — livre para uso, modificação e distribuição.
