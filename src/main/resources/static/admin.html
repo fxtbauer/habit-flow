@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br" x-data="adminPage()" x-init="init()">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - HabitFlow</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  <style>
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #161b22;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #0006;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #30363d;
+      text-align: left;
+    }
+
+    .btn {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+
+    .btn-promote { background: #3b82f6; }
+    .btn-promote:hover { background: #60a5fa; }
+
+    .btn-delete { background: #da3633; }
+    .btn-delete:hover { background: #f85149; }
+
+    .logout {
+      background: #da3633;
+      float: right;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <button class="logout" @click="logout()">Sair</button>
+
+    <h1>Painel Administrativo</h1>
+    <p>Gerencie usuários registrados</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuário</th>
+          <th>Função</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <template x-for="u in users" :key="u.id">
+          <tr>
+            <td x-text="u.id"></td>
+            <td x-text="u.username"></td>
+            <td x-text="u.role"></td>
+
+            <td>
+              <button class="btn btn-promote" 
+                @click="promote(u.id)" 
+                x-show="u.role !== 'admin'">
+                Tornar Admin
+              </button>
+
+              <button class="btn btn-delete" 
+                @click="removeUser(u.id)">
+                Excluir
+              </button>
+            </td>
+
+          </tr>
+        </template>
+      </tbody>
+    </table>
+
+  </div>
+
+  <script>
+    function adminPage() {
+      return {
+        users: [],
+
+        async init() {
+          const role = localStorage.getItem("role");
+
+          if (role !== "admin") {
+            window.location.href = "/login";
+            return;
+          }
+
+          this.loadUsers();
+        },
+
+        async loadUsers() {
+          const res = await fetch("/admin/users");
+          this.users = await res.json();
+        },
+
+        async promote(id) {
+          await fetch(`/admin/promote/${id}, { method: "PUT" }`);
+          this.loadUsers();
+        },
+
+        async removeUser(id) {
+          await fetch(`/admin/delete/${id}, { method: "DELETE" }`);
+          this.loadUsers();
+        },
+
+        logout() {
+          localStorage.clear();
+          window.location.href = "/login";
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
