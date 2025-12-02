@@ -12,8 +12,9 @@ import br.gov.sp.fatec.pg.oo.model.Habit;
 
 public class HabitRepository{
         public void createHabit(Habit habit) {
+        // SQL para inserir um novo hábito    
         String sql = "INSERT INTO habits (user_id, name, completed) VALUES (?, ?, ?)";
-
+        //  Garante que Connection e PreparedStatement sejam fechados automaticamente    
         try (Connection conn = SQLConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

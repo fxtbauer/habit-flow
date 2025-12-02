@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br" x-data="{ username: '', password: '', message: '' }">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login - HabitFlow</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+</head>
+
+  <body>
+    <div class="card">
+      <h2 style="text-align: center">HabitFlow</h2>
+
+      <input type="text" placeholder="Username" x-model="username" />
+      <input type="password" placeholder="Password" x-model="password" />
+
+      <button
+        @click="
+    fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/dashboard';
+        } else {
+            message = data.message;
+        }
+    })
+"
+      >
+        Entrar
+      </button>
+
+      <p
+        x-text="message"
+        style="margin-top: 10px; color: #444; text-align: center"
+      ></p>
+    </div>
+  </body>
+</html>
