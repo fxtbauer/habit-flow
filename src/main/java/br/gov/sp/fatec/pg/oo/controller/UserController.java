@@ -42,21 +42,36 @@ public class UserController {
         User user = userRepository.findByUsername(loginData.getUsername());
 
         if (user == null) {
-            ctx.json(Map.of("success", false, "message", "Usuário não encontrado"));
+            ctx.json(Map.of(
+                "success", false,
+                "message", "Usuário não encontrado"
+            ));
             return;
         }
 
         if (!user.getPassword().equals(loginData.getPassword())) {
-            ctx.json(Map.of("success", false, "message", "Senha incorreta"));
+            ctx.json(Map.of(
+                "success", false,
+                "message", "Senha incorreta"
+            ));
             return;
         }
 
-        ctx.json(Map.of("success", true));
+        // Login válido -> retornamos userId para a sessão
+        ctx.json(Map.of(
+            "success", true,
+            "userId", user.getId(),
+            "message", "Login realizado com sucesso"
+        ));
 
     } catch (Exception e) {
-        ctx.json(Map.of("success", false, "message", "Erro no login"));
+        ctx.json(Map.of(
+            "success", false,
+            "message", "Erro no login"
+        ));
     }
 }
+
 
 
 
