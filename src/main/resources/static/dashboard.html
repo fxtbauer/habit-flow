@@ -82,10 +82,22 @@
       .btn-del:hover {
         background: #f85149;
       }
+
+      .btn-edit {
+        background: #3b82f6;
+        border-radius: 6px;
+        padding: 6px 12px;
+        color: white;
+        cursor: pointer;
+      }
+
+      .btn-edit:hover {
+        background: #60a5fa;
+      }
     </style>
   </head>
 
- <body x-init="init(); loadHabits()">
+  <body x-init="init(); loadHabits()">
     <h1>HabitFlow</h1>
     <p>Gerencie seus hábitos de forma simples e elegante</p>
 
@@ -97,86 +109,105 @@
 
         <div class="actions">
           <button class="btn-ok" @click="toggleHabit(habit)">✓</button>
+
+          <button class="btn-edit" @click="editHabit(habit)">Editar</button>
+
           <button class="btn-del" @click="deleteHabit(habit.id)">X</button>
         </div>
       </div>
     </template>
 
     <script>
-  function dashboard() {
-    return {
+      function dashboard() {
+        return {
+          userId: null,
+          habits: [],
 
-      userId: null,
-      habits: [],
+          // Proteção de rota
+          init() {
+            const savedId = localStorage.getItem("userId");
 
-      // Proteção de rota
-      init() {
-        const savedId = localStorage.getItem("userId");
+            if (!savedId) {
+              window.location.href = "/login";
+              return;
+            }
 
-        if (!savedId) {
-          window.location.href = "/login";
-          return;
-        }
+            this.userId = savedId;
+          },
 
-        this.userId = savedId;
-      },
+          // Carrega hábitos
+          async loadHabits() {
+            const res = await fetch(`/habits/${this.userId}`);
+            this.habits = await res.json();
+          },
 
-      // Carrega hábitos
-      async loadHabits() {
-        const res = await fetch(`/habits/${this.userId}`);
-        this.habits = await res.json();
-      },
+          // Cria hábito
+          async addHabit() {
+            const name = prompt("Nome do hábito:");
+            if (!name) return;
 
-      // Cria hábito
-      async addHabit() {
-        const name = prompt("Nome do hábito:");
-        if (!name) return;
+            await fetch("/habits", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                userId: this.userId,
+                name,
+                completed: false,
+              }),
+            });
 
-        await fetch("/habits", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: this.userId,
-            name,
-            completed: false,
-          }),
-        });
+            this.loadHabits();
+          },
 
-        this.loadHabits();
-      },
+          // Alterna concluído
+          async toggleHabit(habit) {
+            await fetch(`/habits/${habit.id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: habit.id,
+                userId: this.userId,
+                name: habit.name,
+                completed: !habit.completed,
+              }),
+            });
 
-      // Alterna concluído
-      async toggleHabit(habit) {
-        await fetch(`/habits/${habit.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: habit.id,
-            userId: this.userId,
-            name: habit.name,
-            completed: !habit.completed,
-          }),
-        });
+            this.loadHabits();
+          },
 
-        this.loadHabits();
-      },
+          // Deleta hábito
+          async deleteHabit(id) {
+            await fetch(`/habits/${id}`, {
+              method: "DELETE",
+            });
 
-      // Deleta hábito
-      async deleteHabit(id) {
-        await fetch(`/habits/${id}`, {
-          method: "DELETE",
-        });
+            this.loadHabits();
+          },
+          async editHabit(habit) {
+            const newName = prompt("Novo nome para o hábito:", habit.name);
+            if (!newName || newName.trim() === "") return;
 
-        this.loadHabits();
-      },
+            await fetch(`/habits/${habit.id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: habit.id,
+                userId: this.userId,
+                name: newName,
+                completed: habit.completed,
+              }),
+            });
 
-      // Logout
-      logout() {
-        localStorage.removeItem("userId");
-        window.location.href = "/login";
-      },
-    };
-  }
-</script>
+            this.loadHabits();
+          },
+
+          // Logout
+          logout() {
+            localStorage.removeItem("userId");
+            window.location.href = "/login";
+          },
+        };
+      }
+    </script>
   </body>
 </html>
