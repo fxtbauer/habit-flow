@@ -7,7 +7,7 @@
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
       defer
     ></script>
-</head>
+  </head>
 
   <body x-init="loadHabits()">
     <h1>Dashboard</h1>
@@ -103,7 +103,11 @@
 
           // Exclui hábito
           async deleteHabit(id) {
-            await fetch(`/habits/${id}, { method: "DELETE" }`);
+            console.log("Deletando hábito:", id);
+            await fetch(`/habits/${id}`, {
+              method: "DELETE",
+            });
+
             this.loadHabits();
           },
         };
