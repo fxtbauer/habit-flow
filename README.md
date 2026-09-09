@@ -39,7 +39,7 @@ Inspirada no visual dark do GitHub:
 
 ---
 
-# 🛠 Tecnologias Utilizadas
+# Tecnologias Utilizadas
 
 ### Backend
 
@@ -121,7 +121,7 @@ http://localhost:7070
 
 ---
 
-# 🗄 Banco de Dados
+# Banco de Dados
 
 O arquivo SQLite é criado automaticamente:
 
